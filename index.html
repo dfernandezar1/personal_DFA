@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David Fernández-Arenas — Astrophysicist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg: #f6f3ec;
+    --bg-elev: #ffffff;
+    --ink: #17202e;
+    --ink-dim: #5a6478;
+    --line: rgba(23,32,46,0.12);
+    --halpha: #c23c28;
+    --oiii: #12897a;
+    --hbeta: #2f4bb0;
+    --shadow: 0 10px 30px rgba(23,32,46,0.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0b1220;
+      --bg-elev: #121b2e;
+      --ink: #eef2f7;
+      --ink-dim: #9fb0c7;
+      --line: rgba(255,255,255,0.10);
+      --halpha: #ea5c46;
+      --oiii: #4fd9c4;
+      --hbeta: #7c93ff;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0b1220;
+    --bg-elev: #121b2e;
+    --ink: #eef2f7;
+    --ink-dim: #9fb0c7;
+    --line: rgba(255,255,255,0.10);
+    --halpha: #ea5c46;
+    --oiii: #4fd9c4;
+    --hbeta: #7c93ff;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s ease, color .3s ease;
+  }
+  ::selection{ background:var(--oiii); color:#04110f; }
+
+  h1,h2,h3{
+    font-family:'Fraunces', Georgia, 'Times New Roman', serif;
+    font-weight:600;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  a{ color:inherit; }
+  p{ color:var(--ink-dim); line-height:1.65; max-width:62ch; }
+
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+
+  /* subtle starfield texture, static — no motion */
+  .stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, var(--ink) 0%, transparent 60%),
+      radial-gradient(1px 1px at 80% 10%, var(--ink) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 60% 70%, var(--ink) 0%, transparent 60%),
+      radial-gradient(1px 1px at 30% 85%, var(--ink) 0%, transparent 60%),
+      radial-gradient(1px 1px at 92% 55%, var(--ink) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 45% 40%, var(--ink) 0%, transparent 60%);
+    opacity:0.06;
+  }
+
+  /* ============ LAYOUT SHELL ============ */
+  .shell{ position:relative; z-index:1; display:grid; grid-template-columns:220px 1fr; max-width:1180px; margin:0 auto; }
+  @media (max-width:900px){ .shell{ grid-template-columns:1fr; } }
+
+  nav.side{
+    position:sticky; top:0; align-self:start; height:100vh;
+    padding:36px 20px 36px 28px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    border-right:1px solid var(--line);
+  }
+  @media (max-width:900px){
+    nav.side{ position:static; height:auto; border-right:none; border-bottom:1px solid var(--line);
+      flex-direction:row; align-items:center; padding:16px 20px; }
+  }
+  .brand{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; }
+  .brand small{ display:block; font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:11px; color:var(--ink-dim); margin-top:3px; letter-spacing:.02em; }
+  @media (max-width:900px){ .brand small{ display:none; } }
+
+  .navlist{ list-style:none; margin:28px 0 0; padding:0; display:flex; flex-direction:column; gap:3px; }
+  @media (max-width:900px){ .navlist{ display:none; } }
+  .navlist a{
+    display:flex; align-items:baseline; gap:10px;
+    text-decoration:none; color:var(--ink-dim); font-size:13.5px;
+    padding:7px 8px; border-radius:6px; transition:color .15s ease, background .15s ease;
+  }
+  .navlist a .dot{ width:5px; height:5px; border-radius:50%; background:var(--line); flex:none; transition:background .15s ease, transform .15s ease; }
+  .navlist a:hover{ color:var(--ink); }
+  .navlist a.active{ color:var(--ink); font-weight:500; background:var(--bg-elev); }
+  .navlist a.active .dot{ background:var(--oiii); transform:scale(1.6); }
+
+  .side-foot{ display:flex; gap:14px; }
+  @media (max-width:900px){ .side-foot{ margin-left:auto; } }
+  .themebtn{
+    background:none; border:1px solid var(--line); color:var(--ink-dim);
+    width:32px; height:32px; border-radius:50%; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .themebtn:hover{ color:var(--ink); border-color:var(--ink-dim); }
+
+  main{ padding:0 28px 40px; min-width:0; }
+  @media (max-width:900px){ main{ padding:0 20px 40px; } }
+  section{ padding:74px 0; border-bottom:1px solid var(--line); scroll-margin-top:24px; }
+  section:last-of-type{ border-bottom:none; }
+
+  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-dim); margin:0 0 10px; }
+  .sec-title{ font-size:26px; margin-bottom:28px; }
+
+  /* ============ HERO ============ */
+  .hero{ padding:76px 0 60px; border-bottom:1px solid var(--line); }
+  .hero-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+  .hero h1{ font-size:clamp(34px,5.4vw,58px); }
+  .hero .role{ font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--oiii); margin-top:14px; }
+  .hero .loc{ color:var(--ink-dim); font-size:14px; margin-top:6px; }
+  .hero p.lede{ margin-top:26px; font-size:17px; }
+  .hero-links{ margin-top:28px; display:flex; gap:22px; flex-wrap:wrap; }
+  .hero-links a{ font-size:13.5px; text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; color:var(--ink); }
+  .hero-links a:hover{ border-color:var(--ink); }
+
+  svg.spectrum{ display:block; width:100%; height:auto; margin-top:44px; }
+  .spectrum path.trace{
+    fill:none; stroke-width:1.6;
+    stroke-dasharray:1400; stroke-dashoffset:1400;
+    animation:draw 2.2s ease forwards .3s;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @media (prefers-reduced-motion:reduce){
+    .spectrum path.trace{ animation:none; stroke-dashoffset:0; }
+  }
+  .spectrum .baseline{ stroke:var(--line); stroke-width:1; }
+  .spectrum text{ font-family:'IBM Plex Mono',monospace; font-size:10px; fill:var(--ink-dim); }
+
+  /* ============ TIMELINE ============ */
+  .tl{ position:relative; padding-left:26px; }
+  .tl::before{ content:""; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line); }
+  .tl-item{ position:relative; padding-bottom:34px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{
+    content:""; position:absolute; left:-26px; top:5px; width:9px; height:9px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--hbeta);
+  }
+  .tl-date{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-dim); }
+  .tl-role{ font-size:17px; font-weight:600; margin-top:4px; font-family:'Fraunces',serif; }
+  .tl-org{ font-size:14px; color:var(--ink-dim); margin-top:2px; }
+  .tl-desc{ font-size:14px; margin-top:8px; max-width:60ch; }
+
+  /* ============ GRID CARDS ============ */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:680px){ .grid2{ grid-template-columns:1fr; } }
+  .card{ background:var(--bg-elev); border:1px solid var(--line); border-radius:10px; padding:20px 22px; }
+  .card h3{ font-size:15.5px; }
+  .card .tag{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--halpha); margin-bottom:8px; display:block; }
+  .card p{ font-size:13.5px; margin-top:8px; }
+
+  /* ============ PUBLICATIONS ============ */
+  .filters{ display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+  .filter-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-dim);
+    background:none; border:1px solid var(--line); border-radius:20px; padding:7px 14px; cursor:pointer;
+    transition:all .15s ease;
+  }
+  .filter-btn.active{ color:var(--bg); background:var(--ink); border-color:var(--ink); }
+  .filter-btn:hover:not(.active){ color:var(--ink); border-color:var(--ink-dim); }
+
+  .pub{ padding:18px 0; border-top:1px solid var(--line); display:flex; gap:18px; justify-content:space-between; }
+  .pub:last-child{ }
+  .pub-main{ flex:1; min-width:0; }
+  .pub-title{ font-size:15px; font-weight:500; }
+  .pub-meta{ font-size:13px; color:var(--ink-dim); margin-top:5px; }
+  .pub-meta a{ color:var(--hbeta); text-decoration:none; }
+  .pub-meta a:hover{ text-decoration:underline; }
+  .pub-cite{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--oiii); white-space:nowrap;
+    align-self:center;
+  }
+
+  /* ============ LISTS ============ */
+  ul.plain{ list-style:none; margin:0; padding:0; }
+  ul.plain li{
+    padding:12px 0; border-top:1px solid var(--line); font-size:14px; color:var(--ink-dim);
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  ul.plain li span.item-main{ color:var(--ink); }
+  ul.plain li span.item-when{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-dim); white-space:nowrap; }
+
+  .skill-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .chip{ font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:6px 11px; color:var(--ink-dim); }
+
+  /* ============ CONTACT ============ */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:10px; }
+  @media (max-width:680px){ .contact-grid{ grid-template-columns:1fr; } }
+  .contact-item .label{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-dim); }
+  .contact-item .value{ font-size:16px; margin-top:5px; }
+  .contact-item .value a{ text-decoration:none; border-bottom:1px solid var(--line); }
+  .contact-item .value a:hover{ border-color:var(--ink); }
+
+  footer{ padding:30px 0 10px; font-size:12px; color:var(--ink-dim); font-family:'IBM Plex Mono',monospace; }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="shell">
+
+  <nav class="side">
+    <div>
+      <div class="brand">D. Fernández-Arenas<small>Astrophysicist · Medellín / Hawai'i</small></div>
+      <ul class="navlist" id="navlist">
+        <li><a href="#inicio" class="dot-link"><span class="dot"></span>Home</a></li>
+        <li><a href="#sobre-mi" class="dot-link"><span class="dot"></span>About</a></li>
+        <li><a href="#trayectoria" class="dot-link"><span class="dot"></span>Career</a></li>
+        <li><a href="#investigacion" class="dot-link"><span class="dot"></span>Research</a></li>
+        <li><a href="#publicaciones" class="dot-link"><span class="dot"></span>Publications</a></li>
+        <li><a href="#docencia" class="dot-link"><span class="dot"></span>Teaching</a></li>
+        <li><a href="#divulgacion" class="dot-link"><span class="dot"></span>Outreach</a></li>
+        <li><a href="#contacto" class="dot-link"><span class="dot"></span>Contact</a></li>
+      </ul>
+    </div>
+    <div class="side-foot">
+      <button class="themebtn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="inicio">
+      <div class="hero-top">
+        <div>
+          <h1>David<br>Fernández-Arenas</h1>
+          <div class="role">Ionized gas · HII regions · Star formation</div>
+          <div class="loc">Medellín, Colombia · Canada–France–Hawai'i Telescope</div>
+        </div>
+      </div>
+      <p class="lede">Observational astrophysicist specializing in the ionized interstellar medium, giant HII regions and HII galaxies, and their use as cosmological tracers. PhD from INAOE (2018), with postdoctoral appointments in Mexico, China and Hawai'i, and an active collaborator on the SIGNALS (CFHT/SITELLE) and JWST ERS Whirlpool surveys.</p>
+      <div class="hero-links">
+        <a href="#publicaciones">View publications</a>
+        <a href="https://ui.adsabs.harvard.edu/public-libraries/N0NllFcnTVmHB4JzvJ_uvw" target="_blank" rel="noopener">ADS library ↗</a>
+        <a href="https://orcid.org/0000-0002-6874-4570" target="_blank" rel="noopener">ORCID ↗</a>
+        <a href="#contacto">Contact</a>
+      </div>
+
+      <svg class="spectrum" viewBox="0 0 920 150" preserveAspectRatio="none" role="img" aria-label="Illustrative emission-line spectrum">
+        <line class="baseline" x1="0" y1="118" x2="920" y2="118"></line>
+        <path class="trace" stroke="var(--ink-dim)" opacity="0.5" d="M0,118 L120,118 L140,112 L160,118 L360,118 L385,90 L400,20 L415,90 L440,118 L560,118 L580,96 L595,58 L610,96 L630,118 L760,118 L778,102 L790,70 L802,102 L820,118 L920,118"></path>
+        <path class="trace" stroke="var(--hbeta)" d="M0,118 L390,118 L400,28 L410,118 L920,118" style="animation-delay:.5s"></path>
+        <path class="trace" stroke="var(--oiii)" d="M0,118 L585,118 L595,66 L605,118 L920,118" style="animation-delay:.9s"></path>
+        <path class="trace" stroke="var(--halpha)" d="M0,118 L783,118 L790,78 L797,118 L920,118" style="animation-delay:1.3s"></path>
+        <text x="382" y="14">Hβ 4861Å</text>
+        <text x="565" y="52">[OIII] 5007Å</text>
+        <text x="758" y="64">Hα 6563Å</text>
+      </svg>
+    </section>
+
+    <!-- ===================== SOBRE MÍ ===================== -->
+    <section id="sobre-mi">
+      <div class="eyebrow">Profile</div>
+      <h2 class="sec-title">About me</h2>
+      <p>My research combines high-resolution integral-field spectroscopy (MEGARA/GTC, SITELLE/CFHT, KMOS/VLT) with photoionization models to characterize the physical and chemical properties of ionized gas in nearby galaxies — from individual HII regions to entire discs. A parallel line of work uses HII galaxies as independent tracers to measure the Hubble constant and test the ΛCDM model.</p>
+      <p>I have been part of the SIGNALS team (CFHT), the JWST Early Release Science program on the Whirlpool Galaxy, and the ESTALLIDOS, BEARD and WEAVE collaborations. In 2025 I was appointed Subaru Support Astronomer.</p>
+      <div class="skill-row">
+        <span class="chip">Python</span><span class="chip">IDL</span><span class="chip">IRAF</span>
+        <span class="chip">pPXF</span><span class="chip">CIGALE</span><span class="chip">QFitsView</span>
+        <span class="chip">IFS pipelines</span><span class="chip">SQL</span><span class="chip">LaTeX</span>
+      </div>
+    </section>
+
+    <!-- ===================== TRAYECTORIA ===================== -->
+    <section id="trayectoria">
+      <div class="eyebrow">2017 — present</div>
+      <h2 class="sec-title">Academic career</h2>
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-date">2025</div>
+          <div class="tl-role">Subaru Support Astronomer</div>
+          <div class="tl-org">Subaru Telescope · Hawai'i, USA</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Sep. 2022 — Nov. 2024</div>
+          <div class="tl-role">Postdoctoral Fellow, SIGNALS</div>
+          <div class="tl-org">Canada–France–Hawai'i Telescope (CFHT) · USA</div>
+          <div class="tl-desc">Identification and characterization of HII regions with SITELLE within the SIGNALS survey.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">May. 2021 — Jun. 2022</div>
+          <div class="tl-role">CONACYT Postdoc</div>
+          <div class="tl-org">INAOE · Mexico</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Nov. 2018 — Oct. 2020</div>
+          <div class="tl-role">PKU Fellow</div>
+          <div class="tl-org">Kavli Institute for Astronomy and Astrophysics, Peking University · China</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Feb. — Oct. 2018</div>
+          <div class="tl-role">INAOE Postdoc</div>
+          <div class="tl-org">Instituto Nacional de Astrofísica, Óptica y Electrónica · Mexico</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2017 · 2022 · 2022–2024</div>
+          <div class="tl-role">Academic visitor</div>
+          <div class="tl-org">Univ. of Cambridge (UK) · Univ. Complutense de Madrid (Spain) · UNAM (Mexico) · Dunlap Institute, Univ. of Toronto (Canada)</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Feb. 2018</div>
+          <div class="tl-role">PhD in Astrophysics</div>
+          <div class="tl-org">INAOE · Advisors: R. Terlevich, E. Terlevich, M. Plionis</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Jul. 2013</div>
+          <div class="tl-role">MSc in Astrophysics</div>
+          <div class="tl-org">INAOE · Advisors: R. Terlevich, E. Terlevich</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Feb. 2010</div>
+          <div class="tl-role">BSc in Mathematics and Physics</div>
+          <div class="tl-org">Universidad de Antioquia (UdeA) · Advisor: L. S. Mejía Aristizábal</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== INVESTIGACIÓN ===================== -->
+    <section id="investigacion">
+      <div class="eyebrow">Active collaborations</div>
+      <h2 class="sec-title">Research</h2>
+      <div class="grid2">
+        <div class="card">
+          <span class="tag">2022 — present</span>
+          <h3>SIGNALS</h3>
+          <p>Star-formation, Ionized Gas and Nebular Abundances Legacy Survey. Identification and characterization of HII regions with SITELLE (CFHT).</p>
+        </div>
+        <div class="card">
+          <span class="tag">2023 — present</span>
+          <h3>JWST ERS — Whirlpool</h3>
+          <p>Interplay between the interstellar medium and star formation on small scales, in comparison with SIGNALS.</p>
+        </div>
+        <div class="card">
+          <span class="tag">2023 — present</span>
+          <h3>ESTALLIDOS 8</h3>
+          <p>Analysis of HII galaxies and giant HII regions with multiple observations (Spain–Mexico).</p>
+        </div>
+        <div class="card">
+          <span class="tag">2021 — present</span>
+          <h3>BEARD</h3>
+          <p>Bulgeless Evolution And the Rise of Disks. High-resolution MEGARA/GTC spectroscopy of the ionized gas and stellar components.</p>
+        </div>
+        <div class="card">
+          <span class="tag">2021 — present</span>
+          <h3>WEAVE</h3>
+          <p>Survey of star-forming regions in the local Universe: sample selection and data analysis.</p>
+        </div>
+        <div class="card">
+          <span class="tag">2012 — 2022</span>
+          <h3>Telescope time</h3>
+          <p>Over 140 h as PI/Co-I on MEGARA, EMIR and KMOS (GTC, VLT), plus nights on Subaru/HDS and Keck/MOSFIRE, and over 100 h on 2 m-class telescopes in Mexico (OAGH, OAN-SPM).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PUBLICACIONES ===================== -->
+    <section id="publicaciones">
+      <div class="eyebrow">Selected · ADS, updated May 2026</div>
+      <h2 class="sec-title">Publications</h2>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="first">First-author</button>
+        <button class="filter-btn" data-filter="collab">Collaborative</button>
+        <button class="filter-btn" data-filter="chapter">Book chapters</button>
+      </div>
+
+      <div id="pubList">
+
+        <div class="pub" data-type="first">
+          <div class="pub-main">
+            <div class="pub-title">An independent determination of the local Hubble constant</div>
+            <div class="pub-meta">Fernández-Arenas D. et al. · MNRAS 474, 1250 · 2018 · <a href="https://doi.org/10.1093/mnras/stx2710" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">93 cit.</div>
+        </div>
+
+        <div class="pub" data-type="first">
+          <div class="pub-main">
+            <div class="pub-title">From Giant HII regions and HII galaxies to globular clusters and compact dwarf ellipticals</div>
+            <div class="pub-meta">E. Terlevich, Fernández-Arenas D., et al. · MNRAS 481, 268 · 2018</div>
+          </div>
+          <div class="pub-cite">8 cit.</div>
+        </div>
+
+        <div class="pub" data-type="first">
+          <div class="pub-main">
+            <div class="pub-title">Spatially-resolved properties of the ionized gas in the HII galaxy J084220+115000</div>
+            <div class="pub-meta">Fernández-Arenas D. et al. · MNRAS 519(3), 4221–4240 · 2022</div>
+          </div>
+          <div class="pub-cite">6 cit.</div>
+        </div>
+
+        <div class="pub" data-type="first">
+          <div class="pub-main">
+            <div class="pub-title">Ionized gas in NGC 4258: exploring the AGN–star formation connection</div>
+            <div class="pub-meta">Fernández-Arenas D. et al. · MNRAS · 2025 · <a href="https://doi.org/10.1093/mnras/staf1177" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">1 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">On the mixing of oxygen and nitrogen in the spiral galaxy NGC 6946</div>
+            <div class="pub-meta">Bresolin F., Fernández-Arenas D., et al. · MNRAS · 2025 · <a href="https://doi.org/10.1093/mnras/staf510" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">10 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">A luminous and young galaxy at z = 12.33 revealed by a JWST/MIRI detection of Hα and [OIII]</div>
+            <div class="pub-meta">Zavala J. et al., incl. Fernández-Arenas D. · Nature Astronomy · 2024 · <a href="https://doi.org/10.1038/s41550-024-02397-3" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">107 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">ALMA Detection of [OIII] 88 µm at z = 12.33: Exploring the Nature and Evolution of GHZ2</div>
+            <div class="pub-meta">Zavala J. et al., incl. Fernández-Arenas D. · ApJ · 2024 · <a href="https://doi.org/10.3847/2041-8213/ad8f38" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">65 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">NGC 628 in SIGNALS: Explaining the Abundance-Ionization Correlation in HII Regions</div>
+            <div class="pub-meta">Garner III, R., et al., incl. Fernández-Arenas D. · ApJ · 2024</div>
+          </div>
+          <div class="pub-cite">35 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">Mapping the Hubble flow from z ∼ 0 to z ∼ 7.5 with HII Galaxies</div>
+            <div class="pub-meta">Chávez R. et al., incl. Fernández-Arenas D. · MNRAS · 2025 · <a href="https://doi.org/10.1093/mnras/staf386" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite">6 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">Using newest VLT-KMOS HII Galaxies and other cosmic tracers to test the ΛCDM tension</div>
+            <div class="pub-meta">Ahmad M. et al., incl. Fernández-Arenas D. · MNRAS 509, 224–231 · 2022</div>
+          </div>
+          <div class="pub-cite">22 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">The stellar population responsible for a kiloparsec-size superbubble in the JWST 'phantom' images of NGC 628</div>
+            <div class="pub-meta">Mayya Y. D. et al., incl. Fernández-Arenas D. · MNRAS 521, 5492–5507 · 2022</div>
+          </div>
+          <div class="pub-cite">14 cit.</div>
+        </div>
+
+        <div class="pub" data-type="collab">
+          <div class="pub-main">
+            <div class="pub-title">Cosmological Constraints using the newest VLT-KMOS HII Galaxies and the full Planck CMB spectrum</div>
+            <div class="pub-meta">Tsiapi P. et al., incl. Fernández-Arenas D. · MNRAS 506(4), 5039–5045 · 2021</div>
+          </div>
+          <div class="pub-cite">8 cit.</div>
+        </div>
+
+        <div class="pub" data-type="chapter">
+          <div class="pub-main">
+            <div class="pub-title">Determination of the local Hubble constant using Giant extragalactic HII regions and HII galaxies</div>
+            <div class="pub-meta">Fernández-Arenas D. &amp; Chávez R. · en <em>Hubble Constant Tension</em>, Springer Singapore · 2024 · <a href="https://doi.org/10.48550/arXiv.2309.15248" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite mono">Book ch.</div>
+        </div>
+
+        <div class="pub" data-type="chapter">
+          <div class="pub-main">
+            <div class="pub-title">The CosmoVerse White Paper: Addressing observational tensions in cosmology with systematics and fundamental physics</div>
+            <div class="pub-meta">Chávez R. et al., incl. Fernández-Arenas D. · Physics of the Dark Universe 49, 101965 · 2025 · <a href="https://doi.org/10.1016/j.dark.2025.101965" target="_blank" rel="noopener">DOI</a></div>
+          </div>
+          <div class="pub-cite mono">—</div>
+        </div>
+
+      </div>
+
+      <p style="margin-top:26px;font-size:13px;">
+        <a href="https://ui.adsabs.harvard.edu/public-libraries/N0NllFcnTVmHB4JzvJ_uvw" target="_blank" rel="noopener" style="color:var(--hbeta);text-decoration:none;border-bottom:1px solid var(--line);">Full list in the ADS repository ↗</a>
+        <span style="color:var(--ink-dim);"> · </span>
+        <a href="https://orcid.org/0000-0002-6874-4570" target="_blank" rel="noopener" style="color:var(--hbeta);text-decoration:none;border-bottom:1px solid var(--line);">ORCID profile ↗</a>
+      </p>
+    </section>
+
+    <!-- ===================== DOCENCIA ===================== -->
+    <section id="docencia">
+      <div class="eyebrow">Training the next generation</div>
+      <h2 class="sec-title">Teaching &amp; mentoring</h2>
+
+      <h3 style="font-size:15px;margin-bottom:8px;">Graduate co-supervision (INAOE)</h3>
+      <ul class="plain">
+        <li><span class="item-main">José Fernando Valencia Hernández — H0 from Cepheids and TRGB distance calibrators (submitted to RMxAA)</span><span class="item-when">2024</span></li>
+        <li><span class="item-main">Guillermo Fernando Romero Cruz — stellar feedback in NGC 1087 (in preparation for MNRAS)</span><span class="item-when">2024</span></li>
+        <li><span class="item-main">Luz Itzel Álvarez — ages and kinematics of super star clusters in NGC 1569 with GTC/MEGARA (submitted to MNRAS)</span><span class="item-when">2022</span></li>
+      </ul>
+
+      <h3 style="font-size:15px;margin:26px 0 8px;">Research internship mentoring</h3>
+      <ul class="plain">
+        <li><span class="item-main">Jelle Vandersnickt — NGC 628 with SITELLE and MUSE · KU Leuven</span><span class="item-when">2025</span></li>
+        <li><span class="item-main">Parisa Nozari — physical properties of M43 using SITELLE data · Queen's University</span><span class="item-when">2023</span></li>
+        <li><span class="item-main">Eva Méndez — identification and characterization of Wolf-Rayet stars in HII galaxies · RECA</span><span class="item-when">2021</span></li>
+      </ul>
+
+      <h3 style="font-size:15px;margin:26px 0 8px;">Courses</h3>
+      <ul class="plain">
+        <li><span class="item-main">Mathematics and Physics — Planetario La Enseñanza / Colegio La Enseñanza, Medellín</span><span class="item-when">2025—</span></li>
+        <li><span class="item-main">Modern Physics and Astrophysics (elective) — Universidad de Nariño</span><span class="item-when">2025</span></li>
+        <li><span class="item-main">Teaching assistant, mathematical methods — Universidad de Antioquia</span><span class="item-when">2007–2010</span></li>
+      </ul>
+    </section>
+
+    <!-- ===================== DIVULGACIÓN Y RECONOCIMIENTOS ===================== -->
+    <section id="divulgacion">
+      <div class="eyebrow">Community</div>
+      <h2 class="sec-title">Outreach &amp; honors</h2>
+
+      <div class="grid2" style="align-items:start;">
+        <div>
+          <h3 style="font-size:15px;margin-bottom:10px;">Recent outreach</h3>
+          <ul class="plain">
+            <li><span class="item-main">Organizer, Expo-Astronomía · Planetario La Enseñanza</span><span class="item-when">2026</span></li>
+            <li><span class="item-main">Talk, "Del Barrio a las Estrellas" · ITM</span><span class="item-when">2025</span></li>
+            <li><span class="item-main">Seminars, Expo-Astronomía · Planetario La Enseñanza</span><span class="item-when">2025—</span></li>
+            <li><span class="item-main">Talks for RECA, Education Node</span><span class="item-when">2021–2024</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size:15px;margin-bottom:10px;">Selected honors</h3>
+          <ul class="plain">
+            <li><span class="item-main">Subaru Support Astronomer</span><span class="item-when">2025</span></li>
+            <li><span class="item-main">Reviewer · MNRAS, ApJ, OJAp, JAA</span><span class="item-when">2024—</span></li>
+            <li><span class="item-main">DGAPA fellowship, UNAM</span><span class="item-when">2022</span></li>
+            <li><span class="item-main">PhD thesis Honourable Mention · National Astronomy Conference</span><span class="item-when">2019</span></li>
+            <li><span class="item-main">SNI candidate · CONACyT</span><span class="item-when">2019</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACTO ===================== -->
+    <section id="contacto">
+      <div class="eyebrow">Let's talk</div>
+      <h2 class="sec-title">Contact</h2>
+      <p>Open to research collaborations, telescope time proposals, student mentoring and outreach activities.</p>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="label">CFHT</div>
+          <div class="value"><a href="mailto:arenas@cfht.hawaii.edu">arenas@cfht.hawaii.edu</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="label">Colombia</div>
+          <div class="value"><a href="mailto:david.fernandez@cdm.edu.co">david.fernandez@cdm.edu.co</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="label">Phone · Colombia</div>
+          <div class="value mono">+57 333 259 9411</div>
+        </div>
+        <div class="contact-item">
+          <div class="label">Phone · USA</div>
+          <div class="value mono">+1 808 938 3295</div>
+        </div>
+        <div class="contact-item">
+          <div class="label">ORCID</div>
+          <div class="value"><a href="https://orcid.org/0000-0002-6874-4570" target="_blank" rel="noopener">0000-0002-6874-4570</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="label">ADS</div>
+          <div class="value"><a href="https://ui.adsabs.harvard.edu/public-libraries/N0NllFcnTVmHB4JzvJ_uvw" target="_blank" rel="noopener">Public repository ↗</a></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>David Fernández-Arenas · Medellín, Colombia · Last updated September 2026 · <a href="https://orcid.org/0000-0002-6874-4570" target="_blank" rel="noopener" style="color:inherit;border-bottom:1px solid var(--line);text-decoration:none;">ORCID ↗</a></footer>
+  </main>
+</div>
+
+<script>
+  // Theme toggle
+  const btn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    if(current === 'dark'){ root.setAttribute('data-theme','light'); }
+    else if(current === 'light'){ root.removeAttribute('data-theme'); }
+    else { root.setAttribute('data-theme','dark'); }
+  });
+
+  // Smooth active-section highlighting
+  const links = document.querySelectorAll('#navlist a');
+  const sections = document.querySelectorAll('main section');
+  const byId = id => document.querySelector('#navlist a[href="#'+id+'"]');
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const link = byId(entry.target.id);
+        if(link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  sections.forEach(s=>observer.observe(s));
+
+  // Publication filters
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const pubs = document.querySelectorAll('.pub');
+  filterBtns.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      filterBtns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const f = b.dataset.filter;
+      pubs.forEach(p=>{
+        p.style.display = (f==='all' || p.dataset.type===f) ? 'flex' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>
